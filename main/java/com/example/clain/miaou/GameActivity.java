@@ -1,11 +1,19 @@
 package com.example.clain.miaou;
 
+import android.app.Service;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -18,40 +26,46 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GameActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private static final Random random = new Random();
-
-    private int Res_score;
-    private int nextScore;
+public class GameActivity extends AppCompatActivity /*implements View.OnClickListener*//*,SensorEventListener*/ {
 
     // Screen Size
     private int screenWidth, screenHeight;
 
+    private static final Random random = new Random();
 
-    // Composant graphique
+    private int Res_score;
+
+
+    private  GameView gameView;
+
+
+
+
+    /*// Composant graphique
 
     ImageView back;
     ImageView pause;
     ImageView restart;
-    TextView score;
+    TextView score;*/
 
-    private ImageView meteor, cat, coin;
 
-    // Position
-    private  float meteorX;
-    private  float meteorY;
 
-    private float coinX;
-    private float coinY;
+    // Gestion des capteurs :
+   /* private Sensor mAccelerometer;
+    private SensorManager manager;
+    private boolean accelSupported;*/
 
-    private float catX;
-    private  float catY;
+
+
+
+/*
+
+
 
     // Initialize  class
     private Handler handler = new Handler();
     private Timer timer = new Timer();
-
+*/
 
 
     // Donnnées
@@ -60,128 +74,78 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.scene);
+        //setContentView(R.layout.scene);
+
+        //Initialisation de gameview
+        gameView = new GameView(this);
+
+        //ajout contentview
+       setContentView(gameView);
+
+        // capteur
+        /*manager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
+        mAccelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);*/
 
 
-        back = (ImageView) findViewById(R.id.iv_back);
+        /*back = (ImageView) findViewById(R.id.iv_back);
         pause = (ImageView) findViewById(R.id.iv_pause);
         restart = (ImageView) findViewById(R.id.iv_reset);
-        score = (TextView) findViewById(R.id.tv_res);
+        score = (TextView) findViewById(R.id.tv_res);*/
 
-        meteor = (ImageView) findViewById(R.id.iv_meteor);
-        cat = (ImageView) findViewById(R.id.iv_cat);
-        coin =(ImageView) findViewById(R.id.iv_coin);
 
-        // Redirige le clic sur la méthode onClick
+        /**
+         * Redirige le clic sur la méthode onClick
+         */
 
-        back.setOnClickListener(this);
+        /*back.setOnClickListener(this);
         pause.setOnClickListener(this);
         restart.setOnClickListener(this);
-        score.setOnClickListener(this);
+        score.setOnClickListener(this);*/
 
 
-        // Get Screen Size
-        WindowManager wm = getWindowManager();
+        /**
+         *   Get Screen Size
+         *
+         */
+
+        /*WindowManager wm = getWindowManager();
         Display disp = wm.getDefaultDisplay();
         Point size = new Point();
         disp.getSize(size);
         screenWidth = size.x;
-        screenHeight = size.y;
-
-        /**
-         *   init position
-         */
-
-
-
-        //Meteor
-        meteorX = random.nextInt(screenWidth)+1;
-        meteor.setX(meteorX);
-        meteor.setY(200);
-
-        //Cat
-        cat.setX((screenWidth/2)-50);
-        cat.setY(0);
-
-        // Coins
-        coinX = random.nextInt(screenWidth)+1;
-        coin.setX(coinX);
-        coin.setY(0);
-
-        //debug
-        System.out.println("ScreenHeight :  " + screenHeight);
-
-
-
-        /**
-         * Start the timer
-         */
-
-       GameTimer();
-
-
+        screenHeight = size.y;*/
 
 
 
     }
 
-    public void GameTimer(){
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("on Resume");
+        gameView.demarrer();
+        /*activerDeplacement();
+        GameTimer();*/
 
-
-                        //System.out.println("Appelle changePos");
-                        changePos();
-
-                        nextScore += 1;
-
-                        if(nextScore >= 50){
-                            Res_score += 1;
-                            score.setText("" + Res_score);
-                            nextScore = 0;
-                        }
-
-                    }
-                });
-            }
-        }, 0, 10);
     }
-
-    public void changePos(){
-        //System.out.println("Update Position");
-        meteorY += 2;
-        coinY += 1;
-
-
-        if (meteor.getY() > screenHeight){
-            meteorX = random.nextInt(screenWidth)+1;
-            meteorY = 200;
-
-
-        }
-        meteor.setX(meteorX);
-        meteor.setY(meteorY);
-
-        if (coin.getY() > screenHeight){
-            coinX = random.nextInt(screenWidth)+1;
-            coinY = 100;
-
-
-        }
-        coin.setX(coinX);
-        coin.setY(coinY);
-    }
-
-
-
-
 
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        //gameView.arreter();
+
+        /*if(accelSupported){
+                manager.unregisterListener(this,mAccelerometer);
+        }
+       */
+
+        }
+
+
+
+
+    /*@Override
     public void onClick(View v) {
 
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom);
@@ -192,15 +156,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 back.startAnimation(animation);
                 System.out.println("Retour");
                 Intent mainMenu  = new Intent(GameActivity.this, MainActivity.class);
-
                 startActivity(mainMenu);
+
                 break;
 
             case R.id.iv_pause:
                 pause.startAnimation(animation);
                 System.out.println("Pause");
-                timer.cancel();
-
+                //timer.cancel();
+                onPause();
                 break;
 
 
@@ -216,8 +180,55 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                  break;
 
         }
+    }*/
+
+
+    /*****************************************************
+     * Implémentation de l'interface SensorEventListener *
+     *****************************************************/
+
+
+    /*@Override
+    public void onSensorChanged(SensorEvent event) {
+
+
+
+        switch (event.sensor.getType()){
+            case Sensor.TYPE_ACCELEROMETER:
+
+
+                int x = (int) event.values[0];
+                int y =(int) event.values[1];
+
+                moveHero(-x*vitesse, y*vitesse);
+        }
+
     }
 
+    private void  moveHero(int x , int y){
+        catX += x;
+        catY += y;
+
+        if(catX < 0){
+            catX = 0;
+        }else if (catX + cat.getWidth() > screenWidth){
+            catX = screenWidth - cat.getWidth();
+        }
+        if(catY < 0){
+            catY = 0;
+        }
+
+        if(catY > screenHeight - (screenHeight/4)){
+            catY = screenHeight - (screenHeight/4);
+        }
 
 
+        cat.setX(catX);
+        cat.setY(catY);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }*/
 }
