@@ -59,32 +59,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
-        <ImageView
-            android:id="@+id/iv_meteor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/meteor" />
-
-        <ImageView
-            android:id="@+id/iv_coin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/coins" />
-
-        <TextView
-            android:id="@+id/textView10"
+        <com.example.clain.miaou.GameView
+            android:id="@+id/gameV"
+            class="com.example.clain.miaou.GameView"
             android:layout_width="match_parent"
-            android:layout_height="293dp"
-            android:text="TextView"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/iv_cat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/cat" />
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 
