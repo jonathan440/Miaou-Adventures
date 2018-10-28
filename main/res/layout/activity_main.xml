@@ -32,26 +32,52 @@
         app:srcCompat="@drawable/score" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="384dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:layout_weight="1"
+        android:layout_weight="0"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/sonOn"
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0">
+
+            <ImageView
+                android:id="@+id/sonOff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/off" />
+
+            <ImageView
+                android:id="@+id/sonOn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                app:srcCompat="@drawable/onn" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_reset_score"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
             android:layout_weight="0"
-            app:srcCompat="@drawable/onn" />
+            android:gravity="center"
+            android:text="Réinitialiser score"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/sonOff"
-            android:layout_width="wrap_content"
+            android:id="@+id/iv_i"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:visibility="visible"
-            app:srcCompat="@drawable/off" />
+            android:scaleType="fitEnd"
+            app:srcCompat="@drawable/i" />
 
     </LinearLayout>
 
