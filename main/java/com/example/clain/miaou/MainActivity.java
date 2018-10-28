@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
 
     // Composant graphique
 
@@ -18,6 +20,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView score;
     ImageView sonOn;
     ImageView sonOff;
+    TextView resetScore;
+    ImageView i;
+
+
 
     // Données
 
@@ -36,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         score = (ImageView) findViewById(R.id.score);
         sonOn = (ImageView) findViewById(R.id.sonOn);
         sonOff = (ImageView) findViewById(R.id.sonOff);
+        resetScore=(TextView) findViewById(R.id.tv_reset_score);
+        i = (ImageView) findViewById(R.id.iv_i);
+
 
 
         // Redirige le clic sur la méthode onClick
@@ -44,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         score.setOnClickListener(this);
         sonOn.setOnClickListener(this);
         sonOff.setOnClickListener(this);
+        resetScore.setOnClickListener(this);
+        i.setOnClickListener(this);
+
+
 
         // Init son du jeu
         play();
@@ -76,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AudioGame.start();
     }
 
+
+
     @Override
     public void onClick(View v) {
 
@@ -93,30 +108,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);*/
                 Intent game  = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(game);
-                //finish();
+                finish();
                 break;
 
             case R.id.score:
                 System.out.println("Affichage du score");
+                Intent scoreView  = new Intent(MainActivity.this,ScoreView.class);
+                startActivity(scoreView);
+                finish();
+
                 break;
 
 
             case R.id.sonOn:
-                System.out.println("Activer son");
-                sonOn.startAnimation(animationBlink);
-                sonOff.clearAnimation();
-                play();
-                break;
-
-            case R.id.sonOff:
-                System.out.println("Désactiver son");
-                /*sonOff.startAnimation(animationBlink);
-                sonOn.clearAnimation();*/
+                System.out.println("Appui sonOn");
+                sonOn.setVisibility(View.INVISIBLE);
+                sonOff.setVisibility(View.VISIBLE);
                 stop();
 
 
-                //sonOn.setVisibility(View.INVISIBLE);
+
+
                 break;
+
+            case R.id.sonOff:
+
+                System.out.println("Appui SonOff");
+
+                sonOff.setVisibility(View.INVISIBLE);
+                sonOn.setVisibility(View.VISIBLE);
+                play();
+                break;
+
+            case R.id.tv_reset_score:
+                System.out.println("Remise à 0 du score");
+                resetScore.startAnimation(animationZoom);
+                break;
+
+            case R.id.iv_i:
+                Intent i= new Intent(MainActivity.this, HowToPlay.class);
+                startActivity(i);
+                break;
+
+
 
             default:
                 break;

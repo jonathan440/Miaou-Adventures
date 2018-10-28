@@ -2,11 +2,13 @@ package com.example.clain.miaou;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
@@ -19,6 +21,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
@@ -26,16 +29,20 @@ import static android.graphics.Color.WHITE;
 
 public class GameView extends /*View*/ SurfaceView  implements Runnable, SurfaceHolder.Callback {
 
-
+    private SurfaceHolder surfaceHolder = null;
     private BG bg;
     private Hero hero;
     private Items items;
-    private boolean explosion = false, ItemToDraw = true;
+    private boolean ItemToDraw = true, afterExplosion = false;
+    private int timeToShow;
+
+    private boolean explosion = false;
+    public  boolean defaite = false;
 
     //objet de dessin
     private Paint paint;
     private Canvas canvas;
-    private SurfaceHolder surfaceHolder;
+
 
     private volatile Thread gameThread = null;
     int fps = 60;
@@ -43,33 +50,34 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
     private int screenWidth, screenHeight;
 
 
-    /**
-     *  composant graphique
-     */
-
-    private  Bitmap back;
-
-
 
     /**
      * Constructeur
      */
 
-    /*public GameView(Context context, AttributeSet attrs){
-        super(context, attrs);
-    }*/
-
-    public GameView(Context context) {
+    public GameView(Context context){
         super(context);
-     /*public GameView(Context context, AttributeSet attrs){
+    }
+
+
+     public GameView(Context context, AttributeSet attrs){
         super(context, attrs);
-        getHolder().addCallback(this);*/
+        getHolder().addCallback(this);
+        this.setFocusable(true);
 
-         System.out.println("TTTTT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-        surfaceHolder = getHolder();
 
-        paint = new Paint();
+
+        if(surfaceHolder == null){
+            surfaceHolder = getHolder();
+            surfaceHolder.addCallback(this);
+        }
+
+        if(paint == null){
+            paint = new Paint();
+        }
+
+
 
         /**
          *   Get Screen Size
@@ -91,15 +99,9 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
          * Composant graphique
          */
 
-        //back = BitmapFactory.decodeResource(getResources(),R.drawable.back);
-
-
         bg = new BG(context, screenWidth, screenHeight);
         hero = new Hero(context, screenWidth, screenHeight);
         items = new Items(context,screenWidth,screenHeight);
-
-
-
 
 
     }
@@ -119,12 +121,6 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
         }
     }
 
-    /*@Override
-    protected void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
-
-    }*/
-    
 
     @Override
     public void run() {
@@ -147,14 +143,8 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
             }
             startTime = System.currentTimeMillis();
 
-            //System.out.println("Runing the game !!");
-
             update();
             draw();
-
-
-
-
 
 
 
@@ -163,24 +153,34 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
     }
 
     private void update(){
+
         bg.update();
-        hero.activerDeplacement();
         items.update();
+        hero.activerDeplacement();
+        items.updateMeteor();
+
+
 
         //if (Rect.intersects(hero.getCollision(),items.getCollisionM())) {
         if (items.getMeteorY() >=   hero.getY() && items.getMeteorX() >=  hero.getX() &&  items.getMeteorX() <= hero.getX()+hero.getBitmap().getWidth() ) {
         //if(hero.getCollision().intersect(items.getCollisionM()) ||items.getCollisionM().intersect(hero.getCollision())){
             System.out.println("Collision !");
+
+            // element à dessiner lorsque le jeu tourne
             ItemToDraw = false;
             explosion = true;
+            defaite = true;
 
             hero.desactiverDeplacement();
+            //arreter();
 
-            arreter();
+
+
 
         }
 
     }
+
 
     private void draw(){
 
@@ -189,28 +189,47 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
             canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.BLACK);
             paint.setColor(Color.WHITE);
-            paint.setTextSize(50);
-            canvas.drawText("Score : " + items.getScore(),screenWidth/2 - (screenWidth/6) , screenHeight/10,paint);
+
             canvas.drawBitmap(bg.getBitmap(),bg.getX(),bg.getY(),paint);
             canvas.drawBitmap(bg.getBitmap2(),bg.getX(),bg.getY2(),paint);
             if(ItemToDraw){
                 canvas.drawBitmap(hero.getBitmap(),hero.getX(), hero.getY(), paint);
                 canvas.drawBitmap(items.getBitmap(),items.getMeteorX(),items.getMeteorY(),paint);
+                canvas.drawBitmap(items.getBitmap2(),items.getCoinX(),items.getCoinY(),paint);
             }
-            canvas.drawBitmap(items.getBitmap2(),items.getCoinX(),items.getCoinY(),paint);
+
+
             if(explosion){
-                canvas.drawBitmap(items.getBitmapExplosion(),hero.getX(),hero.getY(),paint);
+
+                timeToShow += 1;
+
+                if(timeToShow <= 200){
+                    int x = hero.getX();
+                    int y = hero.getY();
+                    canvas.drawBitmap(items.getBitmapExplosion(),x,y,paint);
+
+                }
+                else{
+                    arreter();
+                }
+
+
+
             }
+
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
         else System.out.println("IS NOT VALIDE");
     }
 
+
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         // sout
         System.out.println("Oui !!!!!!!!!!");
-        demarrer();
+        //demarrer();
+
     }
 
     @Override

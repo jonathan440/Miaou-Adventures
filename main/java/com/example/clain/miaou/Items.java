@@ -33,18 +33,22 @@ public class Items {
 
 
         collisionM = new Rect(MeteorX,MeteorY,Meteor.getWidth(),Meteor.getHeight());
+
+
     }
 
-    public void update(){
-
-        counter += 1;
+    public  void updateMeteor(){
         int  meteorVariation = random.nextInt(25 - 20 +1)+20;
         MeteorY += meteorVariation;
         if (MeteorY > screenY){
             MeteorX = random.nextInt(screenX-(screenX/10))+1;
             MeteorY = 0;
         }
+    }
 
+    public void update(){
+
+        counter += 1;
         CoinY += 4;
         if (CoinY > screenY){
             CoinX = random.nextInt(screenX-(screenX/10))+1;
@@ -54,14 +58,14 @@ public class Items {
 
     }
 
-    public int getScore(){
+    /*public int getScore(){
         if(counter >= 50){
             score += 1;
             counter = 0;
-        }
+    }
 
         return score;
-    }
+    }*/
 
     public Bitmap getBitmap(){
         return Meteor;
@@ -87,10 +91,12 @@ public class Items {
         return CoinY;
     }
 
-    public int getExplosionX(){ return ExplosionX;
+    public int getExplosionX(){
+        return ExplosionX;
     }
 
-    public int getExplosionY(){ return ExplosionY;
+    public int getExplosionY(){
+        return ExplosionY;
     }
 
     public Rect getCollisionM(){
