@@ -38,7 +38,7 @@ public class Items {
     }
 
     public  void updateMeteor(){
-        int  meteorVariation = random.nextInt(25 - 20 +1)+20;
+        int  meteorVariation = random.nextInt(25 - 15 +1)+15;
         MeteorY += meteorVariation;
         if (MeteorY > screenY){
             MeteorX = random.nextInt(screenX-(screenX/10))+1;
@@ -56,6 +56,11 @@ public class Items {
         }
 
 
+    }
+
+    public void initCoinsPos(){
+        this.CoinX = random.nextInt(screenX-(screenX/10))+1;
+        this.CoinY = 0;
     }
 
     /*public int getScore(){
@@ -89,6 +94,14 @@ public class Items {
 
     public int getCoinY() {
         return CoinY;
+    }
+
+    public void setCoinX(int coinX) {
+        CoinX = coinX;
+    }
+
+    public void setCoinY(int coinY) {
+        CoinY = coinY;
     }
 
     public int getExplosionX(){

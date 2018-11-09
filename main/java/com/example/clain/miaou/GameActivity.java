@@ -11,10 +11,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -25,31 +28,37 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.sql.Time;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GameActivity extends AppCompatActivity implements View.OnClickListener/*,SensorEventListener*/ {
+public class GameActivity extends AppCompatActivity implements View.OnClickListener,
+        GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener {
+
+
+    private static final String DEBUG_TAG = "Gestures";
+    GestureDetectorCompat mDetector;
 
     private Handler handler = new Handler();
     private  Timer timer = new Timer();
     private TimerTask timerTask;
+
     GameView gameView = null;
 
 
 
     private int SCORE = 0;
     private int counter = 0;
-
-    boolean gameRunning = false;
+    public static boolean DoubleTap = false;
 
     int highScore = 0;
     SharedPreferences sharedPreferences;
 
     // Screen Size
-    private int screenWidth, screenHeight;
+    //private int screenWidth, screenHeight;
 
 
     // Composant graphique
@@ -68,31 +77,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     TextView g_gameOver;
     TextView g_score;
 
+    public static boolean GetDoubleTap() {
+        return DoubleTap;
+    }
 
-
-
-    // Gestion des capteurs :
-   /* private Sensor mAccelerometer;
-    private SensorManager manager;
-    private boolean accelSupported;*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Donnnées
-
-
-
+    public static void setDoubleTap(boolean b) {
+        DoubleTap = b;
+    }
 
 
     @Override
@@ -100,23 +91,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scene);
 
+        mDetector = new GestureDetectorCompat(this,this);
 
         sharedPreferences = getSharedPreferences("SHAR_PREF_NAME",MODE_PRIVATE);
         highScore = sharedPreferences.getInt("ScoreH",0);
 
 
-
         gameView = (GameView) findViewById(R.id.SurfaceView01);
-        /*layoutBarre.setVisibility(View.VISIBLE);
-        layoutGameOver.setVisibility(View.INVISIBLE);*/
-
-
-
-
-        // capteur
-        /*manager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
-        mAccelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);*/
-
 
         back = (ImageView) findViewById(R.id.iv_back);
         pause = (ImageView) findViewById(R.id.iv_pause);
@@ -146,22 +127,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         g_map.setOnClickListener(this);
 
 
-        /**
-         *   Get Screen Size
-         *
-         */
-
-        WindowManager wm = getWindowManager();
-        Display disp = wm.getDefaultDisplay();
-        Point size = new Point();
-        disp.getSize(size);
-        screenWidth = size.x;
-        screenHeight = size.y;
-
-
-        g_gameOver.setText("Defaite");
-
-
+        final Animation translate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.translate);
 
         timerTask = new TimerTask() {
             @Override
@@ -170,11 +136,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run() {
 
+
                         SCORE += 1;
                         Log.d("test","Run was call");
                         if(gameView.defaite){
                             counter += 1;
                             layoutGameOver.setVisibility(View.VISIBLE);
+                            layoutGameOver.startAnimation(translate);
                             layoutBarre.setVisibility(View.INVISIBLE);
                             timer.cancel();
                             highScore = SCORE;
@@ -198,7 +166,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         timer.schedule(timerTask,0,1000);
 
 
-
     }
 
 
@@ -210,11 +177,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         System.out.println("on Resume");
         gameView.demarrer();
-        gameRunning = true;
-
-
-
-
 
     }
 
@@ -224,13 +186,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onPause();
         gameView.arreter();
         timer.cancel();
-
-
-
-        /*if(accelSupported){
-                manager.unregisterListener(this,mAccelerometer);
-        }
-       */
 
         }
 
@@ -250,7 +205,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 Intent mainMenu  = new Intent(GameActivity.this, MainActivity.class);
                 startActivity(mainMenu);
                 finish();
-
                 break;
 
             case R.id.iv_pause:
@@ -265,7 +219,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     onResume();
                     state = true;
                 }
-
                 break;
 
 
@@ -292,6 +245,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("reset");
                 Intent play  = new Intent(GameActivity.this, GameActivity.class);
                 startActivity(play);
+                //overridePendingTransition(R.anim.go_up, R.anim.go_down);
                 finish();
                 break;
 
@@ -302,66 +256,66 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(map);
                 break;
 
-
              default:
                  break;
 
         }
     }
 
-
-
-
-
-
-
-
-    /*****************************************************
-     * Implémentation de l'interface SensorEventListener *
-     *****************************************************/
-
-
-    /*@Override
-    public void onSensorChanged(SensorEvent event) {
-
-
-
-        switch (event.sensor.getType()){
-            case Sensor.TYPE_ACCELEROMETER:
-
-
-                int x = (int) event.values[0];
-                int y =(int) event.values[1];
-
-                moveHero(-x*vitesse, y*vitesse);
-        }
-
-    }
-
-    private void  moveHero(int x , int y){
-        catX += x;
-        catY += y;
-
-        if(catX < 0){
-            catX = 0;
-        }else if (catX + cat.getWidth() > screenWidth){
-            catX = screenWidth - cat.getWidth();
-        }
-        if(catY < 0){
-            catY = 0;
-        }
-
-        if(catY > screenHeight - (screenHeight/4)){
-            catY = screenHeight - (screenHeight/4);
-        }
-
-
-        cat.setX(catX);
-        cat.setY(catY);
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
 
-    }*/
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        //Log.d(DEBUG_TAG,"onDoubleTab : " + e.toString());
+        Toast.makeText(this,"+10", Toast.LENGTH_SHORT).show();
+        DoubleTap = true;
+        SCORE  = SCORE + 10;
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
+
 }

@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -25,6 +26,9 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import static android.graphics.Color.WHITE;
 
 public class GameView extends /*View*/ SurfaceView  implements Runnable, SurfaceHolder.Callback {
@@ -33,11 +37,14 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
     private BG bg;
     private Hero hero;
     private Items items;
-    private boolean ItemToDraw = true, afterExplosion = false;
-    private int timeToShow;
-
-    private boolean explosion = false;
+    private boolean ItemToDraw = true;
+    private boolean explosion = false, Explosion = false, clearExplosion = false;
+    private int nextLevel = 0;
     public  boolean defaite = false;
+    private int nextBonus = 0;
+    private int lastUpdate = 0;
+
+
 
     //objet de dessin
     private Paint paint;
@@ -47,6 +54,8 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
     private volatile Thread gameThread = null;
     int fps = 60;
 
+
+    // Taille de l'ecran
     private int screenWidth, screenHeight;
 
 
@@ -64,8 +73,6 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
         super(context, attrs);
         getHolder().addCallback(this);
         this.setFocusable(true);
-
-
 
 
         if(surfaceHolder == null){
@@ -102,6 +109,7 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
         bg = new BG(context, screenWidth, screenHeight);
         hero = new Hero(context, screenWidth, screenHeight);
         items = new Items(context,screenWidth,screenHeight);
+        //meteor = new Items(context,screenWidth,screenHeight);
 
 
     }
@@ -122,6 +130,10 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
     }
 
 
+
+
+
+
     @Override
     public void run() {
 
@@ -133,7 +145,7 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
 
         while (gameThread == ThreadRun && !ThreadRun.isInterrupted()){
 
-            sleepTime = 1000/fps - (System.currentTimeMillis() - startTime);
+            sleepTime = 100/fps - (System.currentTimeMillis() - startTime);
 
             // pause
             if(sleepTime > 0){
@@ -155,29 +167,45 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
     private void update(){
 
         bg.update();
-        items.update();
         hero.activerDeplacement();
         items.updateMeteor();
+        Bonus();
 
-
-
-        //if (Rect.intersects(hero.getCollision(),items.getCollisionM())) {
-        if (items.getMeteorY() >=   hero.getY() && items.getMeteorX() >=  hero.getX() &&  items.getMeteorX() <= hero.getX()+hero.getBitmap().getWidth() ) {
-        //if(hero.getCollision().intersect(items.getCollisionM()) ||items.getCollisionM().intersect(hero.getCollision())){
-            System.out.println("Collision !");
-
-            // element à dessiner lorsque le jeu tourne
-            ItemToDraw = false;
-            explosion = true;
-            defaite = true;
-
-            hero.desactiverDeplacement();
-            //arreter();
-
-
-
-
+        // si double tap on supprime le bonus de l'ecran
+        if(GameActivity.DoubleTap){
+            items.initCoinsPos();
         }
+        else items.update();
+
+        //Détection des collisions
+        collision();
+
+
+
+    }
+
+    private void collision(){
+
+        if (items.getMeteorY() >=   hero.getY() && items.getMeteorX() >=  hero.getX() &&  items.getMeteorX() <= hero.getX()+hero.getBitmap().getWidth()) {
+            actionIfCollision();
+        }
+
+    }
+
+
+
+
+
+    private void actionIfCollision(){
+        System.out.println("Collision !");
+
+        // element à dessiner lorsque le jeu tourne
+        ItemToDraw = false;
+        explosion = true;
+        Explosion = true;
+        defaite = true;
+
+        hero.desactiverDeplacement();
 
     }
 
@@ -192,34 +220,55 @@ public class GameView extends /*View*/ SurfaceView  implements Runnable, Surface
 
             canvas.drawBitmap(bg.getBitmap(),bg.getX(),bg.getY(),paint);
             canvas.drawBitmap(bg.getBitmap2(),bg.getX(),bg.getY2(),paint);
+
             if(ItemToDraw){
                 canvas.drawBitmap(hero.getBitmap(),hero.getX(), hero.getY(), paint);
                 canvas.drawBitmap(items.getBitmap(),items.getMeteorX(),items.getMeteorY(),paint);
-                canvas.drawBitmap(items.getBitmap2(),items.getCoinX(),items.getCoinY(),paint);
-            }
+                nextLevel += 1;
 
 
-            if(explosion){
-
-                timeToShow += 1;
-
-                if(timeToShow <= 200){
-                    int x = hero.getX();
-                    int y = hero.getY();
-                    canvas.drawBitmap(items.getBitmapExplosion(),x,y,paint);
-
-                }
-                else{
-                    arreter();
+                if(!GameActivity.GetDoubleTap()){
+                    canvas.drawBitmap(items.getBitmap2(),items.getCoinX(),items.getCoinY(),paint);
                 }
 
 
 
+
             }
+
+
+
+
+            if(Explosion){
+                int x = hero.getX();
+                int y = hero.getY();
+                canvas.drawBitmap(items.getBitmapExplosion(),x,y,paint);
+                Explosion = false;
+                clearExplosion = true;
+                arreter();
+
+
+
+            }
+
+
+
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
         else System.out.println("IS NOT VALIDE");
+    }
+
+    public void Bonus(){
+
+        nextBonus +=1;
+        if(nextBonus >= 500){
+            GameActivity.setDoubleTap(false);
+            nextBonus = 0;
+        }
+
+
+
     }
 
 

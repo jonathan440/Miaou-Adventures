@@ -24,9 +24,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView i;
 
 
-
-    // Données
-
     // Audio
     private MediaPlayer AudioGame;
 
@@ -103,9 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("Lancement du jeu");
                 // animation
                 jouer.startAnimation(animationZoom);
-
-                /*Intent intent = new Intent(this, GameActivity.class);
-                startActivity(intent);*/
+                // Lancement d'une nouvelle activitée
                 Intent game  = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(game);
                 finish();
@@ -115,8 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("Affichage du score");
                 Intent scoreView  = new Intent(MainActivity.this,ScoreView.class);
                 startActivity(scoreView);
-                finish();
-
+                overridePendingTransition(R.anim.go_up, R.anim.go_down);
                 break;
 
 
@@ -125,16 +119,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sonOn.setVisibility(View.INVISIBLE);
                 sonOff.setVisibility(View.VISIBLE);
                 stop();
-
-
-
-
                 break;
 
             case R.id.sonOff:
-
                 System.out.println("Appui SonOff");
-
                 sonOff.setVisibility(View.INVISIBLE);
                 sonOn.setVisibility(View.VISIBLE);
                 play();
@@ -143,14 +131,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tv_reset_score:
                 System.out.println("Remise à 0 du score");
                 resetScore.startAnimation(animationZoom);
+                ScoreView.reset();
                 break;
 
             case R.id.iv_i:
                 Intent i= new Intent(MainActivity.this, HowToPlay.class);
                 startActivity(i);
+                overridePendingTransition(R.anim.go_up, R.anim.go_down);
                 break;
-
-
 
             default:
                 break;

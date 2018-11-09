@@ -21,7 +21,7 @@ public class Hero implements SensorEventListener {
     private boolean accelSupported;
 
     // Vitesse perso
-    private int vitesse = 1;
+    private int vitesse = 3;
 
     private int screenWidth, screenHeight;
 
@@ -35,7 +35,9 @@ public class Hero implements SensorEventListener {
 
         // capteur
         manager = (SensorManager) context.getSystemService(Service.SENSOR_SERVICE);
-        mAccelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (manager != null) {
+            mAccelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
 
         collision = new Rect(x,y,bitmap.getWidth(),bitmap.getHeight());
     }

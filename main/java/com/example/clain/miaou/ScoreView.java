@@ -12,12 +12,14 @@ import android.widget.TextView;
 
 public class ScoreView extends AppCompatActivity implements View.OnClickListener {
 
+
+
     // Composant graphique
     TextView score;
-    TextView res;
+    static TextView res;
     ImageView back;
     ImageView photo;
-    SharedPreferences sharedPreferences;
+    static SharedPreferences sharedPreferences;
 
 
     @Override
@@ -31,7 +33,14 @@ public class ScoreView extends AppCompatActivity implements View.OnClickListener
         photo = (ImageView) findViewById(R.id.iv_photo);
 
         back.setOnClickListener(this);
+        photo.setOnClickListener(this);
         res.setText("" + sharedPreferences.getInt("scoreH",0));
+    }
+
+    public static void reset(){
+        SharedPreferences.Editor e = sharedPreferences.edit();
+        e.putInt("scoreH",0);
+        e.apply();
     }
 
     @Override
@@ -46,6 +55,9 @@ public class ScoreView extends AppCompatActivity implements View.OnClickListener
 
             case R.id.iv_photo:
                 System.out.println("Prendre une photo");
+                Intent photo  = new Intent(ScoreView.this, photo.class);
+                startActivity(photo);
+                finish();
                 break;
 
             default:

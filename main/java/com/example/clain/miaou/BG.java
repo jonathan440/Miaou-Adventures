@@ -8,7 +8,7 @@ public class BG {
     private Bitmap bitmap;
     private Bitmap  StarResized,  StarResized2;
     private int x, y, x2, y2;
-    private int speed  =0;
+    private int speed  = 10;
     private int screenX, screenY;
 
     public BG(Context context, int screenWidth, int screenHeight){
@@ -31,7 +31,8 @@ public class BG {
 
         //  Fond 1
         if(y <= screenY){
-            y += 1;
+            y += speed;
+
         }
         else{
             y = -screenY;
@@ -39,7 +40,7 @@ public class BG {
 
         // Fond 2
         if(y2 <= screenY){
-            y2 += 1;
+            y2 += speed;
         }
         else{
             y2 = -screenY;
@@ -48,9 +49,11 @@ public class BG {
 
     public Bitmap getBitmap(){
         return StarResized;
+
     }
     public Bitmap getBitmap2(){
         return StarResized2;
+
     }
 
     public int getX(){
