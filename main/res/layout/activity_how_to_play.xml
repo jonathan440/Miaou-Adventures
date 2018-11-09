@@ -4,15 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradiant1"
     android:orientation="vertical"
     tools:context=".HowToPlay">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/bt_retour"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/back" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Comment jouer ? "
+        android:text="@string/str_i"
         android:textSize="30sp"
         android:textStyle="bold" />
 
@@ -34,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Incliner votre portable" />
+        android:text="@string/str_hero" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -47,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Eviter afin de survivre" />
+        android:text="@string/str_meteor" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -60,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Double tap pour 10 points" />
+        android:text="@string/str_coins" />
 
     <ImageView
         android:id="@+id/imageView4"
@@ -73,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Visuallisez la position du score" />
+        android:text="@string/str_map" />
 
     <ImageView
         android:id="@+id/imageView5"
@@ -86,5 +101,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Prendre une photo" />
+        android:text="@string/str_photo" />
 </LinearLayout>

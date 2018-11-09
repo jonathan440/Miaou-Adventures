@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:paddingTop="50dp"
-                android:text="Game Over"
+                android:text="@string/gameOver"
                 android:textSize="40sp" />
 
             <TextView
@@ -90,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Votre score : "
+                android:text="@string/Score"
                 android:textSize="25sp" />
 
             <TextView
