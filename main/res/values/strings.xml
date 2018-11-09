@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">Miaou</string>
+    <string name="app_name">Miaou Adventure</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="security_error">Security error</string>
+    
+    <string name="reset"> Réinitialiser le score </string>
+    <string name="highScore">Meilleur score : </string>
+
+    <string name="gameOver"> Défaite </string>
+    <string name="Score"> Votre score : </string>
+
+    <string name="str_i">Comment jouer ? </string>
+    <string name="str_hero"> Incliner votre portable</string>
+    <string name="str_meteor">Eviter afin de survivre </string>
+    <string name="str_coins"> Double tap pour 10 points </string>
+    <string name="str_map">Visualisez la position du score </string>
+    <string name="str_photo">Prendre une photo </string>
+
 </resources>
